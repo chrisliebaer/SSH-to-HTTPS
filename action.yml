@@ -13,10 +13,12 @@ runs:
 
     - name: Reconfigure git to use HTTP authentication
       run: |
+        # github.server_url contains https:// prefix, which we need to remove
+        server_url=$(echo ${{ github.server_url }} | sed 's/https:\/\///')
         if [ -z "${{ inputs.github_token }}" ]; then
-          git config --global url."https://github.com/".insteadOf ssh://git@github.com/
+          git config --global url."https://${server_url}/".insteadOf git@${server_url}:
         else
-          git config --global url."https://${{ inputs.github_token }}@github.com/".insteadOf ssh://git@github.com/
+          git config --global url."https://basic:${{ inputs.github_token }}@${server_url}/".insteadOf git@${server_url}:
         fi
       shell: bash
 
